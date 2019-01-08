@@ -9,7 +9,11 @@ public class idcard_analysis extends UDF {
     public String evaluate(String idnumber,String args) {
         String output ="";
         Calendar cal = Calendar.getInstance();
-        if (idnumber.length()!=18|!(idnumber instanceof String)) return output;
+        try {
+            if (idnumber.length()!=18|!(idnumber instanceof String)) return output;
+        } catch (Exception e){
+            return output;
+        }
         if ("birthday".equals(args)) {
             output = idnumber.substring(6,10) + "-" + idnumber.substring(10,12) + "-" + idnumber.substring(12,14);
         } else if ("age".equals(args)) {
@@ -43,10 +47,6 @@ public class idcard_analysis extends UDF {
         return output;
     }
 
-    public String evaluate(Object idnumber,String args) {
-        String output ="";
-        return output;
-    }
 
     public static void main(String[] args) {
         String id = "430406199607162518";
