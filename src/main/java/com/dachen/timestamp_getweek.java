@@ -19,6 +19,19 @@ public class timestamp_getweek extends UDF {
         return output;
     }
 
+    public String evaluate(Long time) {
+        String output="";
+        SimpleDateFormat year = new SimpleDateFormat("yyyy");
+        String timestamp = time.toString();
+        Timestamp date = new Timestamp(Long.parseLong(timestamp.substring(0,10))*1000);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setFirstDayOfWeek(Calendar.MONDAY);
+        calendar.setTime(date);
+        output = year.format(date) + "-" + calendar.get(Calendar.WEEK_OF_YEAR);
+        return output;
+    }
+
+
     public static void main(String[] args) {
         String time = "1502791989015";
         timestamp_getweek pt = new timestamp_getweek();

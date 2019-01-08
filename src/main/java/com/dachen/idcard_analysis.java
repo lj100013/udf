@@ -6,10 +6,10 @@ import java.util.Calendar;
 
 public class idcard_analysis extends UDF {
 
-    public String evaluate(String idnumber,String args) throws Exception {
+    public String evaluate(String idnumber,String args) {
         String output ="";
         Calendar cal = Calendar.getInstance();
-        if (idnumber.length()!=18) throw new Exception("身份证不合法！");
+        if (idnumber.length()!=18) return output;
         if ("birthday".equals(args)) {
             output = idnumber.substring(6,10) + "-" + idnumber.substring(10,12) + "-" + idnumber.substring(12,14);
         } else if ("age".equals(args)) {
@@ -43,8 +43,8 @@ public class idcard_analysis extends UDF {
         return output;
     }
 
-    public static void main(String[] args) throws Exception {
-        String id = "430406199607162518";
+    public static void main(String[] args) {
+        String id = "4304061996071625128";
         idcard_analysis ia = new idcard_analysis();
         System.out.println(ia.evaluate(id,"age"));
     }

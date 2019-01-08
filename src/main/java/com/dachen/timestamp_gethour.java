@@ -15,8 +15,18 @@ public class timestamp_gethour extends UDF {
         return output;
     }
 
+    public String evaluate(Long time) {
+        String output="";
+        String timestamp = time.toString();
+        SimpleDateFormat hour = new SimpleDateFormat("HH");
+        Timestamp date = new Timestamp(Long.parseLong(timestamp.substring(0,10))*1000);
+        output = hour.format(date);
+        return output;
+    }
+
+
     public static void main(String[] args) {
-        String time = "1502791989015";
+        long time = Long.parseLong("1502791989015");
         timestamp_gethour pt = new timestamp_gethour();
         System.out.println(pt.evaluate(time));
     }
