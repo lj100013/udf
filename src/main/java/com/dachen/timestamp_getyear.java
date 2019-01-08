@@ -9,6 +9,7 @@ public class timestamp_getyear extends UDF {
 
     public String evaluate(String time) {
         String output="";
+        if (time.length()<10) return output;
         SimpleDateFormat year = new SimpleDateFormat("yyyy");
         Timestamp date = new Timestamp(Long.parseLong(time.substring(0,10))*1000);
         output = year.format(date);
@@ -20,6 +21,7 @@ public class timestamp_getyear extends UDF {
         String output="";
         SimpleDateFormat year = new SimpleDateFormat("yyyy");
         String timestamp = time.toString();
+        if (timestamp.length()<10) return output;
         Timestamp date = new Timestamp(Long.parseLong(timestamp.substring(0,10))*1000);
         output = year.format(date);
 
@@ -27,7 +29,7 @@ public class timestamp_getyear extends UDF {
     }
 
     public static void main(String[] args) {
-        String time = "1502791989015";
+        String time = "150";
         timestamp_getyear pt = new timestamp_getyear();
         System.out.println(pt.evaluate(time));
     }

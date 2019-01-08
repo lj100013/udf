@@ -9,6 +9,7 @@ public class timestamp_getmonth extends UDF {
 
     public String evaluate(String time)  {
         String output = "";
+        if (time.length()<10) return output;
         SimpleDateFormat month = new SimpleDateFormat("yyyy-MM");
         Timestamp date = new Timestamp(Long.parseLong(time.substring(0, 10)) * 1000);
         output = month.format(date);
@@ -19,6 +20,7 @@ public class timestamp_getmonth extends UDF {
         String output = "";
         SimpleDateFormat month = new SimpleDateFormat("yyyy-MM");
         String timestamp = time.toString();
+        if (timestamp.length()<10) return output;
         Timestamp date = new Timestamp(Long.parseLong(timestamp.substring(0, 10)) * 1000);
         output = month.format(date);
         return output;
