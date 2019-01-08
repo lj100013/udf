@@ -43,6 +43,11 @@ public class idcard_analysis extends UDF {
         return output;
     }
 
+    public String evaluate(Object idnumber,String args) {
+        String output ="";
+        return output;
+    }
+
     public static void main(String[] args) {
         String id = "430406199607162518";
         idcard_analysis ia = new idcard_analysis();
