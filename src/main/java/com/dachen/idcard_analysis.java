@@ -49,7 +49,7 @@ public class idcard_analysis extends UDF {
 
 
     public static void main(String[] args) {
-        String id = "430406199607162518";
+        String id = null;
         idcard_analysis ia = new idcard_analysis();
         System.out.println(ia.evaluate(id,"age"));
     }
