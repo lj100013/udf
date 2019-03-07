@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="udf_lly:jar">
-    <output-path>D:/IDEA/jar</output-path>
-    <root id="archive" name="udf.jar">
-      <element id="module-output" name="udf" />
-    </root>
-  </artifact>
-</component>
