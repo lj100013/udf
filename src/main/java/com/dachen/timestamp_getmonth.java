@@ -3,14 +3,17 @@ package com.dachen;
 import org.apache.hadoop.hive.ql.exec.UDF;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class timestamp_getmonth extends UDF {
 
-    public String evaluate(String time)  {
+    public String evaluate(String time) throws ParseException {
         String output = "";
-        if (time == null || time.length()<10) return output;
         SimpleDateFormat month = new SimpleDateFormat("yyyy-MM");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        if (time == null || time.length()<10) return output;
+        if(time.contains("-")) time = String.valueOf(df.parse(time).getTime());
         Timestamp date = new Timestamp(Long.parseLong(time.substring(0, 10)) * 1000);
         output = month.format(date);
         return output;
@@ -26,8 +29,8 @@ public class timestamp_getmonth extends UDF {
         return output;
     }
 
-    public static void main(String[] args) {
-        String time = "1502791989015";
+    public static void main(String[] args) throws ParseException {
+        String time = "2019-05-01";
         timestamp_getmonth pt = new timestamp_getmonth();
         System.out.println(pt.evaluate(time));
     }
