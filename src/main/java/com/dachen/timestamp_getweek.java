@@ -20,7 +20,8 @@ public class timestamp_getweek extends UDF {
         Calendar calendar = Calendar.getInstance();
         calendar.setFirstDayOfWeek(Calendar.MONDAY);
         calendar.setTime(date);
-        output = year.format(date) + "-" + calendar.get(Calendar.WEEK_OF_YEAR);
+        String week = "";
+        output = year.format(date) + "-" + week.format("%02d",calendar.get(Calendar.WEEK_OF_YEAR));
         return output;
     }
 
@@ -39,7 +40,7 @@ public class timestamp_getweek extends UDF {
 
 
     public static void main(String[] args) throws ParseException {
-        String time = "2019-01-09 05:00:00";
+        String time = "2019-10-25 05:00:00";
         timestamp_getweek pt = new timestamp_getweek();
         System.out.println(pt.evaluate(time));
     }
