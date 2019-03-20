@@ -2,7 +2,6 @@ package com.dachen;
 
 import org.apache.hadoop.hive.ql.exec.UDF;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,8 +20,8 @@ public class timestamp_getweek extends UDF {
         calendar.setFirstDayOfWeek(Calendar.MONDAY);
         calendar.setTime(date);
         String week = "";
-        if (df.format(date).equals("2018-12-31")) {
-            output = "2019" + "-" + week.format("%02d",calendar.get(Calendar.WEEK_OF_YEAR));
+        if (calendar.get(Calendar.MONDAY) == 11 && calendar.get(Calendar.WEEK_OF_YEAR) == 1) {
+            output =  Integer.parseInt(year.format(date)) +1 + "-" + week.format("%02d",calendar.get(Calendar.WEEK_OF_YEAR));
         } else {
             output = year.format(date) + "-" + week.format("%02d", calendar.get(Calendar.WEEK_OF_YEAR));
         }
@@ -40,19 +39,21 @@ public class timestamp_getweek extends UDF {
         calendar.setFirstDayOfWeek(Calendar.MONDAY);
         calendar.setTime(date);
         String week = "";
-        if (df.format(date).equals("2018-12-31")) {
-            output = "2019" + "-" + week.format("%02d",calendar.get(Calendar.WEEK_OF_YEAR));
+        if (calendar.get(Calendar.MONDAY) == 11 && calendar.get(Calendar.WEEK_OF_YEAR) == 1) {
+            output =  Integer.parseInt(year.format(date)) +1 + "-" + week.format("%02d",calendar.get(Calendar.WEEK_OF_YEAR));
         } else {
-            output = year.format(date) + "-" + week.format("%02d",calendar.get(Calendar.WEEK_OF_YEAR));
+            output = year.format(date) + "-" + week.format("%02d", calendar.get(Calendar.WEEK_OF_YEAR));
         }
         return output;
     }
 
 
     public static void main(String[] args) throws ParseException {
-        Long time = 1546185600L;
+        for(int i =0;i<130;i++){
+        String time = 2001 + i + "-12-31";
         timestamp_getweek pt = new timestamp_getweek();
-        System.out.println(pt.evaluate(time));
+        System.out.println(time + "  " + pt.evaluate(time));
+        }
     }
 
 }
