@@ -13,8 +13,11 @@ public class timestamp_getweek extends UDF {
         String output="";
         SimpleDateFormat year = new SimpleDateFormat("yyyy");
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        if (time == null || time.length()<10) return output;
-        if (time.contains("-")) time = String.valueOf(df.parse(time).getTime());
+        if (time == null || time.length()<10) {
+            return output;
+        } else if (time.contains("-")) {
+            time = String.valueOf(df.parse(time).getTime());
+        }
         Timestamp date = new Timestamp(Long.parseLong(time.substring(0,10))*1000);
         Calendar calendar = Calendar.getInstance();
         calendar.setFirstDayOfWeek(Calendar.MONDAY);
