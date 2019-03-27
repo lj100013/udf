@@ -3,23 +3,24 @@ package com.dachen;
 import org.apache.hadoop.hive.ql.exec.UDF;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class timestamp_getday extends UDF {
 
-    public String evaluate(String time) {
+    public String evaluate(String time) throws ParseException {
         String output="";
+        SimpleDateFormat day = new SimpleDateFormat("yyyy-MM-dd");
         if (time.length() == 8 && Long.parseLong(time) >= 19700101 && Long.parseLong(time) <= 21000101) {
             output = time.substring(0, 4) + "-" + time.substring(4, 6) + "-" + time.substring(6, 8);
             return output;
         } else if (time.contains("-")) {
-            return time;
+            time = String.valueOf(day.parse(time).getTime());
         } else if (time == null || time.length()<10) {
             return output;
         }
-        SimpleDateFormat year = new SimpleDateFormat("yyyy-MM-dd");
         Timestamp date = new Timestamp(Long.parseLong(time.substring(0,10))*1000);
-        output = year.format(date);
+        output = day.format(date);
 
         return output;
     }
@@ -32,16 +33,16 @@ public class timestamp_getday extends UDF {
         }  else if (time == null || time.toString().length()<10) {
             return output;
         }
-        SimpleDateFormat year = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat day = new SimpleDateFormat("yyyy-MM-dd");
         String timestamp = time.toString();
         Timestamp date = new Timestamp(Long.parseLong(timestamp.substring(0,10))*1000);
-        output = year.format(date);
+        output = day.format(date);
 
         return output;
     }
 
-    public static void main(String[] args) {
-        String time = "20181127";
+    public static void main(String[] args) throws ParseException {
+        String time = "2018-11-27 00:00:00";
         timestamp_getday pt = new timestamp_getday();
         System.out.println(pt.evaluate(time));
     }

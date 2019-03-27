@@ -11,11 +11,12 @@ public class timestamp_getyear extends UDF {
     public String evaluate(String time) throws ParseException {
         String output="";
         SimpleDateFormat year = new SimpleDateFormat("yyyy");
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         if (time == null || time.length()<10) {
             return output;
         } else if(time.contains("-")) {
-            time = String.valueOf(df.parse(time).getTime());
+            time = String.valueOf(year.parse(time).getTime());
+        } else if (time == null || time.length()<10) {
+            return output;
         }
         Timestamp date = new Timestamp(Long.parseLong(time.substring(0,10))*1000);
         output = year.format(date);
