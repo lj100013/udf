@@ -12,10 +12,11 @@ public class timestamp_getweek extends UDF {
     public String evaluate(String time) throws ParseException {
         String output="";
         SimpleDateFormat year = new SimpleDateFormat("yyyy");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         if (time == null || time.length()<10) {
             return output;
         } else if (time.contains("-")) {
-            time = String.valueOf(year.parse(time).getTime());
+            time = String.valueOf(df.parse(time).getTime());
         } else if (time == null || time.length()<10) {
             return output;
         }
@@ -53,7 +54,7 @@ public class timestamp_getweek extends UDF {
 
 
     public static void main(String[] args) throws ParseException {
-        for(int i =0;i<130;i++){
+        for(int i =0;i<10;i++){
         String time = 2001 + i + "-12-31";
         timestamp_getweek pt = new timestamp_getweek();
         System.out.println(time + "  " + pt.evaluate(time));
