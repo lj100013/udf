@@ -11,12 +11,12 @@ public class timestamp_getday extends UDF {
     public String evaluate(String time) throws ParseException {
         String output="";
         SimpleDateFormat day = new SimpleDateFormat("yyyy-MM-dd");
-        if (time.length() == 8 && Long.parseLong(time) >= 19700101 && Long.parseLong(time) <= 21000101) {
-            output = time.substring(0, 4) + "-" + time.substring(4, 6) + "-" + time.substring(6, 8);
+        if (time == null || time.length()<10) {
             return output;
         } else if (time.contains("-")) {
             time = String.valueOf(day.parse(time).getTime());
-        } else if (time == null || time.length()<10) {
+        } else if (time.length() == 8 && Long.parseLong(time) >= 19700101 && Long.parseLong(time) <= 21000101) {
+            output = time.substring(0, 4) + "-" + time.substring(4, 6) + "-" + time.substring(6, 8);
             return output;
         }
         Timestamp date = new Timestamp(Long.parseLong(time.substring(0,10))*1000);
@@ -42,7 +42,7 @@ public class timestamp_getday extends UDF {
     }
 
     public static void main(String[] args) throws ParseException {
-        String time = "2018-11-27 00:00:00";
+        String time = null;
         timestamp_getday pt = new timestamp_getday();
         System.out.println(pt.evaluate(time));
     }
