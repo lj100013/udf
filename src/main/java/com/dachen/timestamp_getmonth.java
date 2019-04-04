@@ -14,7 +14,11 @@ public class timestamp_getmonth extends UDF {
         if (time == null || time.length()<10) {
             return output;
         } else if(time.contains("-")) {
-            time = String.valueOf(month.parse(time).getTime());
+            try {
+                time = String.valueOf(month.parse(time).getTime());
+            } catch (Exception e) {
+                return output;
+            }
         } else if (time == null || time.length()<10) {
             return output;
         }

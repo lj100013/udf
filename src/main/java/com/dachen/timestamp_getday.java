@@ -5,6 +5,7 @@ import org.apache.hadoop.hive.ql.exec.UDF;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class timestamp_getday extends UDF {
 
@@ -14,7 +15,11 @@ public class timestamp_getday extends UDF {
         if (time == null || time.length()<10) {
             return output;
         } else if (time.contains("-")) {
-            time = String.valueOf(day.parse(time).getTime());
+            try {
+                time = String.valueOf(day.parse(time).getTime());
+            } catch (Exception e) {
+                return output;
+            }
         } else if (time.length() == 8 && Long.parseLong(time) >= 19700101 && Long.parseLong(time) <= 21000101) {
             output = time.substring(0, 4) + "-" + time.substring(4, 6) + "-" + time.substring(6, 8);
             return output;
@@ -42,7 +47,7 @@ public class timestamp_getday extends UDF {
     }
 
     public static void main(String[] args) throws ParseException {
-        String time = null;
+        String time = "-154654846";
         timestamp_getday pt = new timestamp_getday();
         System.out.println(pt.evaluate(time));
     }

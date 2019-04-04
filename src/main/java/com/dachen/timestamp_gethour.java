@@ -15,7 +15,11 @@ public class timestamp_gethour extends UDF {
         if (time == null || time.length()<10) {
             return output;
         } else if (time.contains("-")) {
-            time = String.valueOf(df.parse(time).getTime());
+            try {
+                time = String.valueOf(df.parse(time).getTime());
+            } catch (Exception e) {
+                return output;
+            }
         }
         Timestamp date = new Timestamp(Long.parseLong(time.substring(0,10))*1000);
         output = hour.format(date);
