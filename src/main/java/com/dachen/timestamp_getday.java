@@ -9,7 +9,7 @@ import java.util.Date;
 
 public class timestamp_getday extends UDF {
 
-    public String evaluate(String time) throws ParseException {
+    public String evaluate(String time) {
         String output="";
         SimpleDateFormat day = new SimpleDateFormat("yyyy-MM-dd");
         if (time == null || time.length()<10) {
@@ -46,7 +46,7 @@ public class timestamp_getday extends UDF {
         return output;
     }
 
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) {
         String time = "-154654846";
         timestamp_getday pt = new timestamp_getday();
         System.out.println(pt.evaluate(time));

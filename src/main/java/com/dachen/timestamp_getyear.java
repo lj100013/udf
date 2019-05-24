@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 
 public class timestamp_getyear extends UDF {
 
-    public String evaluate(String time) throws ParseException {
+    public String evaluate(String time) {
         String output="";
         SimpleDateFormat year = new SimpleDateFormat("yyyy");
         if (time == null || time.length()<10) {
@@ -39,7 +39,7 @@ public class timestamp_getyear extends UDF {
         return output;
     }
 
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) {
         String time = "2018-05-08";
         timestamp_getyear pt = new timestamp_getyear();
         System.out.println(pt.evaluate(time));

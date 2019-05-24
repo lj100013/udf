@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 
 public class timestamp_gethour extends UDF {
 
-    public String evaluate(String time) throws ParseException {
+    public String evaluate(String time) {
         String output="";
         SimpleDateFormat hour = new SimpleDateFormat("HH");
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -37,7 +37,7 @@ public class timestamp_gethour extends UDF {
     }
 
 
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) {
         String time = "2018-11-11 01:01:01";
         timestamp_gethour pt = new timestamp_gethour();
         System.out.println(pt.evaluate(time));

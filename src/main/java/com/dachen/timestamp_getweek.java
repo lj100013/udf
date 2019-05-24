@@ -9,7 +9,7 @@ import java.util.Calendar;
 
 public class timestamp_getweek extends UDF {
 
-    public String evaluate(String time) throws ParseException {
+    public String evaluate(String time) {
         String output="";
         SimpleDateFormat year = new SimpleDateFormat("yyyy");
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -57,7 +57,7 @@ public class timestamp_getweek extends UDF {
     }
 
 
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) {
         for(int i =0;i<10;i++){
         String time = 2001 + i + "-12-31";
         timestamp_getweek pt = new timestamp_getweek();

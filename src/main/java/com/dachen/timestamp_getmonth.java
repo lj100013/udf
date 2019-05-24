@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 
 public class timestamp_getmonth extends UDF {
 
-    public String evaluate(String time) throws ParseException {
+    public String evaluate(String time) {
         String output = "";
         SimpleDateFormat month = new SimpleDateFormat("yyyy-MM");
         if (time == null || time.length()<10) {
@@ -37,7 +37,7 @@ public class timestamp_getmonth extends UDF {
         return output;
     }
 
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) {
         String time = "2019-05-01";
         timestamp_getmonth pt = new timestamp_getmonth();
         System.out.println(pt.evaluate(time));

@@ -10,7 +10,7 @@ public class idcard_analysis extends UDF {
         String output ="";
         Calendar cal = Calendar.getInstance();
         try {
-            if (idnumber.length()!=18|!(idnumber instanceof String)) return output;
+            if (idnumber.length() != 18) return output;
         } catch (Exception e){
             return output;
         }
