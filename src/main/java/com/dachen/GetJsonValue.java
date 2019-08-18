@@ -41,7 +41,7 @@ public class GetJsonValue extends UDF {
 
     public String evaluate(String jsonStr, int arrayIndex) {
         try {
-            jsonType=getJosnType(jsonStr);
+            jsonType = getJosnType(jsonStr);
             if (getJosnType(jsonStr) != 2) {
                 //map单独处理
                 if (jsonType == 3) {
@@ -49,7 +49,7 @@ public class GetJsonValue extends UDF {
                     if (jsonStr.matches(objectRegex)) {
                         return null;
                     }
-                    return getMatchPair(jsonStr,'{','}',arrayIndex);
+                    return getMatchPair(jsonStr, '{', '}', arrayIndex);
                 }
                 return null;
             }
@@ -59,7 +59,7 @@ public class GetJsonValue extends UDF {
             } catch (IndexOutOfBoundsException e) {
                 return null;
             } catch (Exception e) {
-                return jsonStr.replace("[", "").replace("]", "").trim().split(",")[arrayIndex];
+                return getLayerMatchPair(jsonStr,'[',']',1).get(arrayIndex);
             }
 
         } catch (Exception ee) {
@@ -89,53 +89,69 @@ public class GetJsonValue extends UDF {
 
     }
 
-    public String getMapValue(String jsonString, String key) {
+    public String getMapValue(String jsonStr, String key) {
         try {
-            String regex = "(?i)" + key + "\\s*" + "=";
-            //未嵌套key,且在json串中不存在,返回空
-
-            if (key.indexOf(".") == -1) {
-                String[] params = jsonString.split(regex);
-                if (params.length == 1) {
-                    return null;
+            //匹配key,忽略key大小写
+            String[] keys=key.split("\\.");
+            int layersize = keys.length;
+            String mainKey=keys[layersize-1];
+            String regex = "(?i)" + mainKey + "\\s*" + "=";
+            String returnStr = null;
+            for (String str : getLayerMatchPair(jsonStr, '{', '}', layersize - 1)) {
+                String params[] = str.split(regex);
+                //未包含key
+                if (params.length <= 1) {
+                    continue;
                 } else if (params.length == 2) {
-                    //value值为对象
-                    if(params[1].trim().startsWith("{")){
-                        return getMatchPair(params[1].trim(),'{','}',0);
+                    //只存在一个key
+                    if (params[1].trim().startsWith("{")) {
+                        //key值是对象,返回对象
+                        returnStr = getMatchPair(params[1].trim(), '{', '}', 0);
+                        break;
                     }
                     //value值为字符串,逗号截取,字段未最后一个,需要清除 }
-                    return params[1].trim().split(",")[0].replace("}","").trim();
-                } else {
-                    //多个相同的key值情况
-                    jsonString=jsonString.trim().substring(1,jsonString.length()-1);
-                    while (jsonString.indexOf("{")!=-1){
-                        //替换所有的{} 值,只取最外层的字段
-                        jsonString=jsonString.replace(getMatchPair(jsonString,'{','}',0),"").trim();
+                    //key为字符串,返回字符串
+                    returnStr = params[1].trim().split(",")[0].replace("}", "").trim();
+                    break;
+
+                }
+                else {
+                    //存在多个key,只取最外层的
+                    str = str.trim().substring(1, str.length() - 1);
+                    //取下一层,看是否包含key,包含则剔除
+                    for(String endStr:getLayerMatchPair(str, '{', '}', 0)){
+                        //包含key,且只包含一个key，剔除
+                        if(endStr.split(regex).length>1 && str.substring(str.indexOf(endStr)-key.length()-2,str.indexOf(endStr)+endStr.length()).split(regex).length==2){
+                            str=str.replace(  endStr,"");
+                        }
                     }
-                    return jsonString.trim().split(regex)[1].trim().split(",")[0].trim();
+                    //替换过后依旧存在相同的key,则为key.key的情况
+                    if(str.split(regex).length>2){
+                        for(String endStr:getLayerMatchPair(str, '{', '}', 0)){
+                            //包含key,且只包含一个key，剔除
+                            if(endStr.split(regex).length==2){
+                                return endStr;
+                            }
+                        }
+                    }
+
+                    params = str.split(regex);
+                    if (params[1].trim().startsWith("{")) {
+                        //key值是对象,返回对象
+                        return getMatchPair(params[1].trim(), '{', '}', 0);
+                    }
+                    //value值为字符串,逗号截取,字段未最后一个,需要清除 }
+                    //key为字符串,返回字符串
+                    return  params[1].trim().split(",")[0].replace("}", "").trim();
                 }
+
             }
-            String[] keys = key.split("\\.");
-            for(int i=0;i<keys.length-1;i++){
-                //去掉最外层大括号
-//            jsonString=jsonString.trim().substring(1,jsonString.length()-1);
-                List<String> list=new ArrayList<>();
-                for(int j=0;j<getOccurCount(jsonString,"{");j++){
-                   String json= getMatchPair(jsonString,'{','}',j);
-                   if(json!=null && json.indexOf(keys[i])!=-1){
-                       list.add(json);
-                   }
-                }
-                getMatchPair(jsonString,'{','}',i);
-            }
-            return getMapValue(jsonString.split("(?i)" +keys[0].trim()+ "\\s*" + "=")[1], keys[1].trim());
+            return returnStr;
         } catch (Exception e) {
             return null;
         }
 
-
     }
-
 
 /*
     获取传入值得类别
@@ -148,9 +164,9 @@ public class GetJsonValue extends UDF {
     public int getJosnType(String jsonStr) {
 
         try {
-            if (jsonStr.matches(objectRegex) && jsonStr.indexOf("=")==-1) {
+            if (jsonStr.matches(objectRegex) && jsonStr.indexOf("=") == -1) {
                 return 1;
-            } else if (jsonStr.matches(arrayRegex) && jsonStr.indexOf("=")==-1) {
+            } else if (jsonStr.matches(arrayRegex) && jsonStr.indexOf("=") == -1) {
                 return 2;
             } else if (isMap(jsonStr)) {
                 return 3;
@@ -207,7 +223,7 @@ public class GetJsonValue extends UDF {
         return o2;
     }
 
-    public  int getOccurCount(String src, String find) {
+    public int getOccurCount(String src, String find) {
         int o = 0;
         int index = -1;
         while ((index = src.indexOf(find, index)) > -1) {
@@ -218,51 +234,79 @@ public class GetJsonValue extends UDF {
     }
 
     //找到成对的指定字符包含的内容
-    public  String getMatchPair(String src,char start, char end,int index){
-        int number=src.length();
+    //index获取第几对,从0开始
+    public String getMatchPair(String src, char start, char end, int index) {
+        int number = src.length();
+        index=index+1;
         //成对个数
-        int pair=getOccurCount(src,String.valueOf(start));
+        int pair = getOccurCount(src, String.valueOf(start));
         //参数校验,不成对 或 成对个数小于获取第几对的值
-        if(number<index  ||  pair<index){
+        if (number < index || pair < index) {
             return null;
         }
-        int startIndex=src.indexOf(start);
-        int endIndex=0;
-        int startNum=1;
-        int endNum=0;
-        int pariNum=0;
-        for(int i=startIndex+1;i<src.length();i++){
+        int startIndex = src.indexOf(start);
+        int endIndex = 0;
+        int startNum = 1;
+        int endNum = 0;
+        int pariNum = 0;
+        for (int i = startIndex + 1; i < src.length(); i++) {
             //开始字符匹配,加一
-            if(src.charAt(i)==start){
+            if (src.charAt(i) == start) {
                 //开始=结束,已经成对,修改开始的索引值,获取下一对的开始
-                if(startNum==endNum){
-                    startIndex=i;
+                if (startNum == endNum) {
+                    startIndex = i;
                 }
-                startNum=startNum+1;
-            }else if(src.charAt(i)==end){
+                startNum = startNum + 1;
+            } else if (src.charAt(i) == end) {
                 //结束字符匹配,加一
-                endNum=endNum+1;
-            }
-            //开始字符数量=结束字符数量,已经成对,成对值+1
-            if(startNum==endNum ){
-                pariNum=pariNum+1;
-                //成对数量=需要获取的第几对,返回字符所在的索引值
-                if(pariNum==index){
-                    endIndex=i;
-                    break;
-                }
+                endNum = endNum + 1;
+                //开始字符数量=结束字符数量,已经成对,成对值+1
+                if (startNum == endNum) {
+                    pariNum = pariNum + 1;
+                    //成对数量=需要获取的第几对,返回字符所在的索引值
+                    if (pariNum == index) {
+                        endIndex = i;
+                        break;
+                    }
 
+                }
             }
+
         }
-        if(endIndex==0){
+        if (endIndex == 0) {
             return null;
         }
 
-        return src.substring(startIndex,endIndex+1);
+        return src.substring(startIndex, endIndex + 1);
 
     }
+
+    //获取指定匹配的内容
+    //layerIndex 获取嵌套的第几层,从0开始,
+    public List<String> getLayerMatchPair(String src, char start, char end, int layerIndex) {
+        int i = 0;
+        List<String> lists = new ArrayList<String>();
+
+        while (getMatchPair(src, start, end, i) != null) {
+            lists.add(getMatchPair(src, start, end, i));
+            i=i+1;
+        }
+        if (layerIndex == 0) {
+            return lists;
+        }
+        List<String> lists2 = new ArrayList<String>();
+        for (String list : lists) {
+            for (String l : getLayerMatchPair(list.trim().substring(1, list.length() - 1), start, end, layerIndex - 1)) {
+                lists2.add(l);
+
+            }
+        }
+        return lists2;
+
+    }
+
     public static void main(String[] args) {
-        String json = "{\"nAme\":\"yang\",\"age\":9,\"addr\":{\"country\":\"中国\",\"city\":\"深圳\",\"compaNy\":[\"大辰\",\"玄关\"]}}";
+        String json = "{\"nAme\":\"yang\",\"age\":9,\"addr\":{\"country\":{\"country\":\"中国2\",\"city\":\"深圳\",\"compaNy\":[\"大2辰\",\"玄关2\"]},\"city\":\"深圳\",\"compaNy\":[\"大辰\",\"玄关\"]}}";
         String json2 = "{name:\"yang\",age:10}";
         String json3 = "{}";
         String arrayjson = "[{\"nAme\":\"yang\",\"age\":9,\"addr\":{\"country\":\"中国\",\"city\":\"深圳\",\"compaNy\":[\"大辰\",\"玄关\"]}},{\"nAme\":\"LI\",\"age\":9,\"addr\":{\"country\":\"CHINAME\",\"city\":\"深圳\",\"compaNy\":[\"大辰2\",\"玄关2\"]}}]";
@@ -271,12 +315,11 @@ public class GetJsonValue extends UDF {
         String arrayjson4 = "[]";
         String arrayjson5 = "";
         String mapjson = "[{type=0, file={sizeStr=238 KB, suffix=pdf, file_id=o_1btf2b8f6li72gq16olnjdkhn11, type=application/pdf, file_name=“儿童晕厥诊断指南(2016年修订版)”解读（王成，2016）.pdf, size=244191, file_url=http://community.file.dachentech.com.cn/o_1btf2b8f6li72gq16olnjdkhn11,xxx={yyy=zzz}}}]";
-        String mapjson2 = "{type=0, file={sizeStr=238 KB, suffix=pdf, file_id=o_1btf2b8f6li72gq16olnjdkhn11, type=application/pdf, file_name=“儿童晕厥诊断指南(2016年修订版)”解读（王成，2016）.pdf, size=244191, file_url=http://community.file.dachentech.com.cn/o_1btf2b8f6li72gq16olnjdkhn11}}";
+        String mapjson2 = "{type=0, file={sizeStr=238 KB, suffix=pdf, file_id=o_1btf2b8f6li72gq16olnjdkhn11, type={type={aaa=bbb}}, file_name=“儿童晕厥诊断指南(2016年修订版)”解读（王成，2016）.pdf, size=244191, file_url=http://community.file.dachentech.com.cn/o_1btf2b8f6li72gq16olnjdkhn11,xxx={yyy=zzz}}}";
 
-        System.out.println(new GetJsonValue().evaluate(mapjson2, "file.xxx.yyy"));
-        System.out.println(new GetJsonValue().evaluate(mapjson, 0,"file"));
-//        System.out.println(new GetJsonValue().evaluate(new GetJsonValue().evaluate(json, "addR.compaNy"), 1));
-//        System.out.println(getMatchPair(arrayjson,'[',']',0));
-//        System.out.println("jsonString".substring(1,"jsonString".length()));
+        System.out.println(new GetJsonValue().evaluate(arrayjson, 1,"addr.comPaNy"));
+        System.out.println(new GetJsonValue().evaluate(mapjson, 0, "file.xxx.yyy"));
+
+
     }
 }
