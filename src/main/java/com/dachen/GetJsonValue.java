@@ -59,7 +59,7 @@ public class GetJsonValue extends UDF {
             } catch (IndexOutOfBoundsException e) {
                 return null;
             } catch (Exception e) {
-                return getLayerMatchPair(jsonStr,'[',']',1).get(arrayIndex);
+                return getLayerMatchPair(jsonStr, '[', ']', 1).get(arrayIndex);
             }
 
         } catch (Exception ee) {
@@ -77,26 +77,35 @@ public class GetJsonValue extends UDF {
     }
 
 
+    //获取json对象指定key的value值
     public String getJsonObjectValue(JSONObject jsonObject, String key) {
         if (key.indexOf(".") == -1) {
             return jsonObject.get(key).toString();
         }
         Object object = jsonObject.get(key.substring(0, key.indexOf(".")));
-        if (object == null || object.getClass().toString().endsWith("JSONArray") || object.getClass().toString().endsWith("String")) {
+        if (object == null || object.getClass().toString().endsWith("JSONArray")) {
+
             return null;
+        }
+        //有时会将字符串对象当成字符串处理
+        if (object.getClass().toString().endsWith("String")) {
+            object = JSONObject.parseObject(object.toString());
+
         }
         return getJsonObjectValue((JSONObject) object, key.substring(key.indexOf(".") + 1));
 
     }
 
+    //获取map json串指定key的value值
     public String getMapValue(String jsonStr, String key) {
         try {
             //匹配key,忽略key大小写
-            String[] keys=key.split("\\.");
+            String[] keys = key.split("\\.");
             int layersize = keys.length;
-            String mainKey=keys[layersize-1];
+            String mainKey = keys[layersize - 1];
             String regex = "(?i)" + mainKey + "\\s*" + "=";
             String returnStr = null;
+            //获取当前对象指定层级的对象
             for (String str : getLayerMatchPair(jsonStr, '{', '}', layersize - 1)) {
                 String params[] = str.split(regex);
                 //未包含key
@@ -114,22 +123,21 @@ public class GetJsonValue extends UDF {
                     returnStr = params[1].trim().split(",")[0].replace("}", "").trim();
                     break;
 
-                }
-                else {
+                } else {
                     //存在多个key,只取最外层的
                     str = str.trim().substring(1, str.length() - 1);
                     //取下一层,看是否包含key,包含则剔除
-                    for(String endStr:getLayerMatchPair(str, '{', '}', 0)){
-                        //包含key,且只包含一个key，剔除
-                        if(endStr.split(regex).length>1 && str.substring(str.indexOf(endStr)-key.length()-2,str.indexOf(endStr)+endStr.length()).split(regex).length==2){
-                            str=str.replace(  endStr,"");
+                    for (String endStr : getLayerMatchPair(str, '{', '}', 0)) {
+                        //包含key,且对象外往前推的字符串只存在一个key,剔除,防止 a:{a:value}的情况
+                        if (endStr.split(regex).length > 1 && str.substring(str.indexOf(endStr) - key.length() - 2, str.indexOf(endStr) + endStr.length()).split(regex).length == 2) {
+                            str = str.replace(endStr, "");
                         }
                     }
                     //替换过后依旧存在相同的key,则为key.key的情况
-                    if(str.split(regex).length>2){
-                        for(String endStr:getLayerMatchPair(str, '{', '}', 0)){
+                    if (str.split(regex).length > 2) {
+                        for (String endStr : getLayerMatchPair(str, '{', '}', 0)) {
                             //包含key,且只包含一个key，剔除
-                            if(endStr.split(regex).length==2){
+                            if (endStr.split(regex).length == 2) {
                                 return endStr;
                             }
                         }
@@ -142,7 +150,7 @@ public class GetJsonValue extends UDF {
                     }
                     //value值为字符串,逗号截取,字段未最后一个,需要清除 }
                     //key为字符串,返回字符串
-                    return  params[1].trim().split(",")[0].replace("}", "").trim();
+                    return params[1].trim().split(",")[0].replace("}", "").trim();
                 }
 
             }
@@ -188,7 +196,8 @@ public class GetJsonValue extends UDF {
     }
 
 
-    public static JSONObject toLowerKeyObject(JSONObject o1) {
+    //json对象key小写
+    public  JSONObject toLowerKeyObject(JSONObject o1) {
         JSONObject o2 = new JSONObject();
         for (String key : o1.keySet()) {
             Object object = o1.get(key);
@@ -201,28 +210,47 @@ public class GetJsonValue extends UDF {
                 o2.put(key.toLowerCase(), toLowerKeyArray((JSONArray) o1.getJSONArray(key)));
 
             } else {
-                o2.put(key.toLowerCase(), object);
+                try {
+                    object = JSONObject.parseObject(object.toString());
+                    //存在字符串对象无法识别的情况,需手动转换一下
+                    o2.put(key.toLowerCase(), toLowerKeyObject((JSONObject) object));
+                } catch (Exception e) {
+                    o2.put(key.toLowerCase(), object);
+                }
+
             }
         }
         return o2;
     }
 
-    public static JSONArray toLowerKeyArray(JSONArray o1) {
+    //数组key小写
+    public  JSONArray toLowerKeyArray(JSONArray o1) {
         JSONArray o2 = new JSONArray();
         for (int i = 0; i < o1.toArray().length; i++) {
             Object jArray = o1.get(i);
             if (jArray.getClass().toString().endsWith("JSONObject")) {
+                //对象,调用对象key小写方法
                 o2.add(toLowerKeyObject((JSONObject) jArray));
             } else if (jArray.getClass().toString().endsWith("JSONArray")) {
+                //数组,递归,继续
                 o2.add(toLowerKeyArray((JSONArray) jArray));
             } else {
-                return o1;
+                try {
+                    jArray = JSONObject.parseObject(jArray.toString());
+                    //存在字符串对象无法识别的情况,需手动转换一下
+                    o2.add(toLowerKeyObject((JSONObject) jArray));
+                } catch (Exception e) {
+                    //字符串,无需转为小写
+                    return o1;
+                }
+
             }
 
         }
         return o2;
     }
 
+    //获取指定字符串出现个数
     public int getOccurCount(String src, String find) {
         int o = 0;
         int index = -1;
@@ -237,7 +265,7 @@ public class GetJsonValue extends UDF {
     //index获取第几对,从0开始
     public String getMatchPair(String src, char start, char end, int index) {
         int number = src.length();
-        index=index+1;
+        index = index + 1;
         //成对个数
         int pair = getOccurCount(src, String.valueOf(start));
         //参数校验,不成对 或 成对个数小于获取第几对的值
@@ -289,7 +317,7 @@ public class GetJsonValue extends UDF {
 
         while (getMatchPair(src, start, end, i) != null) {
             lists.add(getMatchPair(src, start, end, i));
-            i=i+1;
+            i = i + 1;
         }
         if (layerIndex == 0) {
             return lists;
@@ -306,7 +334,7 @@ public class GetJsonValue extends UDF {
     }
 
     public static void main(String[] args) {
-        String json = "{\"nAme\":\"yang\",\"age\":9,\"addr\":{\"country\":{\"country\":\"中国2\",\"city\":\"深圳\",\"compaNy\":[\"大2辰\",\"玄关2\"]},\"city\":\"深圳\",\"compaNy\":[\"大辰\",\"玄关\"]}}";
+        String json = "{\"name\":\"yang\",\"age\":9,\"addr\":{\"country\":\"中国\",\"city\":\"深圳\"}";
         String json2 = "{name:\"yang\",age:10}";
         String json3 = "{}";
         String arrayjson = "[{\"nAme\":\"yang\",\"age\":9,\"addr\":{\"country\":\"中国\",\"city\":\"深圳\",\"compaNy\":[\"大辰\",\"玄关\"]}},{\"nAme\":\"LI\",\"age\":9,\"addr\":{\"country\":\"CHINAME\",\"city\":\"深圳\",\"compaNy\":[\"大辰2\",\"玄关2\"]}}]";
@@ -317,9 +345,11 @@ public class GetJsonValue extends UDF {
         String mapjson = "[{type=0, file={sizeStr=238 KB, suffix=pdf, file_id=o_1btf2b8f6li72gq16olnjdkhn11, type=application/pdf, file_name=“儿童晕厥诊断指南(2016年修订版)”解读（王成，2016）.pdf, size=244191, file_url=http://community.file.dachentech.com.cn/o_1btf2b8f6li72gq16olnjdkhn11,xxx={yyy=zzz}}}]";
         String mapjson2 = "{type=0, file={sizeStr=238 KB, suffix=pdf, file_id=o_1btf2b8f6li72gq16olnjdkhn11, type={type={aaa=bbb}}, file_name=“儿童晕厥诊断指南(2016年修订版)”解读（王成，2016）.pdf, size=244191, file_url=http://community.file.dachentech.com.cn/o_1btf2b8f6li72gq16olnjdkhn11,xxx={yyy=zzz}}}";
 
-        System.out.println(new GetJsonValue().evaluate(arrayjson, 1,"addr.comPaNy"));
-        System.out.println(new GetJsonValue().evaluate(mapjson, 0, "file.xxx.yyy"));
+//        System.out.println(new GetJsonValue().evaluate(mapjson, 0,"file_url"));
+        System.out.println(new GetJsonValue().evaluate(json,  "name"));
 
+        String a = "{\"_id\" : \"586d1b49f509e29aefad942e\", \"bizId\" : \"586d157df509e2ad713f71d5\", \"toUserId\" : \"10347\", \"amount\" : \"0.01\", \"message\" : \"阳光普照1\", \"red_id\" : \"95161003011997696\", \"materialId\" : \"39\", \"redSendSuccess\" : true, \"msgSendSuccess\" : true, \"result\" : \"{\\\"code\\\":\\\"0000\\\",\\\"data\\\":{\\\"Amount\\\":\\\"0.01\\\",\\\"Count\\\":1,\\\"GroupId\\\":\\\"\\\",\\\"ID\\\":\\\"95161003011997696\\\",\\\"Message\\\":\\\"阳光普照1\\\",\\\"Recipient\\\":\\\"10347\\\"},\\\"message\\\":\\\"操作成功\\\",\\\"request_id\\\":\\\"cc724bc0038d49a59a4b1959ec45972a\\\"}\", \"createDate\" : \"2017-01-04T23:56:56.000+0000\"}";
+//        System.out.println(new GetJsonValue().evaluate(json, "addr.countrY.compaNy"));
 
     }
 }
