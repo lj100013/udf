@@ -14,6 +14,7 @@ public class GetJsonValue extends UDF {
 
     public String evaluate(String jsonStr, String key) {
         try {
+            jsonStr = jsonStr.replace("\n", "").replace("\r", "");
             jsonType = getJosnType(jsonStr);
 
             //数组无法获取指定key,无法识别的字符串类型
@@ -41,6 +42,7 @@ public class GetJsonValue extends UDF {
 
     public String evaluate(String jsonStr, int arrayIndex) {
         try {
+            jsonStr = jsonStr.replace("\n", "").replace("\r", "");
             jsonType = getJosnType(jsonStr);
             if (jsonType != 2) {
                 //map单独处理
@@ -355,7 +357,9 @@ public class GetJsonValue extends UDF {
     public static void main(String[] args) {
         String json = "{\"name\":\"yang\",\"age\":9,\"addr\":{\"country\":\"中国\",\"city\":\"深圳\"}}";
         String json2 = "{name:\"yang\",age:10}";
-        String json3 = "{}";
+        String json3 = "{\n" +
+                "  \"courseId\" : \"619493640888127488\"\n" +
+                "}";
         String arrayjson = "[{\"nAme\":\"yang\",\"age\":9,\"addr\":{\"country\":\"中国\",\"city\":\"深圳\",\"compaNy\":[\"大辰\",\"玄关\"]}},{\"nAme\":\"LI\",\"age\":9,\"addr\":{\"country\":\"CHINAME\",\"city\":\"深圳\",\"compaNy\":[\"大辰2\",\"玄关2\"]}}]";
         String arrayjson2 = "[\"a\",\"b\",3]";
         String arrayjson3 = "[[aaa,111],[bbb,222]]";
@@ -365,10 +369,10 @@ public class GetJsonValue extends UDF {
         String mapjson2 = "{type=0, file={sizeStr=238 KB, suffix=pdf, file_id=o_1btf2b8f6li72gq16olnjdkhn11, type={type={aaa=bbb}}, file_name=“儿童晕厥诊断指南(2016年修订版)”解读（王成，2016）.pdf, size=244191, file_url=http://community.file.dachentech.com.cn/o_1btf2b8f6li72gq16olnjdkhn11,xxx={yyy=zzz}}}";
 
 //        System.out.println(new GetJsonValue().evaluate(mapjson2, "file.type.type.aaa"));
-//        System.out.println(new GetJsonValue().evaluate(json3,  "name"));
+        System.out.println(new GetJsonValue().evaluate(json3,  "courseId"));
 
         String a = "{\"_id\" : \"586d1b49f509e29a=;,efad942e\", \"bizId\" : \"586d157df509e2ad713f71d5\", \"toUserId\" : \"10347\", \"amount\" : \"0.01\", \"message\" : \"阳光普照1\", \"red_id\" : \"95161003011997696\", \"materialId\" : \"39\", \"redSendSuccess\" : true, \"msgSendSuccess\" : true, \"result\" : \"{\\\"code\\\":\\\"0000\\\",\\\"result\\\":{\\\"result\\\":\\\"0.01\\\",\\\"Count\\\":1,\\\"GroupId\\\":\\\"\\\",\\\"ID\\\":\\\"95161003011997696\\\",\\\"Message\\\":\\\"阳光普照1\\\",\\\"Recipient\\\":\\\"10347\\\"},\\\"message\\\":\\\"操作成功\\\",\\\"request_id\\\":\\\"cc724bc0038d49a59a4b1959ec45972a\\\"}\", \"createDate\" : \"2017-01-04T23:56:56.000+0000\"}";
-        System.out.println(new GetJsonValue().evaluate(a, "result.resulT.id"));
+//        System.out.println(new GetJsonValue().evaluate(a, "result.resulT.id"));
 
     }
 }
