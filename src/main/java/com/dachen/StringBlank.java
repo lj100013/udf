@@ -2,8 +2,8 @@ package com.dachen;
 
 import org.apache.hadoop.hive.ql.exec.UDF;
 
-public class IsBlank extends UDF {
-    public boolean evaluate(CharSequence cs, boolean isBlank) {
+public class StringBlank extends UDF {
+    public boolean evaluate(String cs, boolean isBlank) {
         if (!isBlank) {
             return cs == null || cs.length() == 0;
         }
@@ -21,7 +21,7 @@ public class IsBlank extends UDF {
         }
     }
 
-    public boolean evaluate(CharSequence cs) {
+    public boolean evaluate(String cs) {
         return evaluate(cs, true);
     }
 
@@ -30,9 +30,9 @@ public class IsBlank extends UDF {
         String b = "";
         String c = "  ";
         String d = "   \n";
-        System.out.println(new IsBlank().evaluate(a));
-        System.out.println(new IsBlank().evaluate(b));
-        System.out.println(new IsBlank().evaluate(c));
-        System.out.println(new IsBlank().evaluate(d));
+        System.out.println(new StringBlank().evaluate(a));
+        System.out.println(new StringBlank().evaluate(b));
+        System.out.println(new StringBlank().evaluate(c));
+        System.out.println(new StringBlank().evaluate(d));
     }
 }
