@@ -3,7 +3,7 @@ package com.dachen.util;
 import org.wltea.analyzer.core.IKSegmenter;
 import org.wltea.analyzer.core.Lexeme;
 
-import java.io.StringReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +41,7 @@ public class ParseAddressUtil {
                 return citySimilar;
             } else {
                 for (String c : cityArr) {
+
                     if (c.indexOf(citySimilar) != -1) {
                         return c;
 
@@ -50,6 +51,7 @@ public class ParseAddressUtil {
         }
         return null;
     }
+
 
     public static List<String> getStringList(String text) throws Exception {
         //独立Lucene实现
@@ -1143,12 +1145,50 @@ public class ParseAddressUtil {
             "江西省,九江市|" +
             "山东省,济南市|" +
             "陕西省,延安市|";
+
+
     public static Map<String, String> cityToProvince = new HashMap<>();
+
+    public static Map<String, List<String>> areaToProvinceAndCity = new HashMap<>();
 
     static {
 
         for (String line : provinceAndCityConfig.split("\\|")) {
             cityToProvince.put(line.split(",")[1], line.split(",")[0]);
+        }
+        InputStreamReader fr = null;
+        BufferedReader br = null;
+        try {
+            InputStream filename = ParseAddressUtil.class.getClassLoader().getResource("address.txt").openStream();
+            fr = new InputStreamReader(filename);
+            br = new BufferedReader(fr);
+            String line = "";
+            while ((line = br.readLine()) != null) {
+                List<String> list = new ArrayList<>();
+                String[] addressArray = line.split(",");
+                list.add(addressArray[0]);
+                list.add(addressArray[1]);
+                areaToProvinceAndCity.put(addressArray[2], list);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            if (fr != null) {
+                try {
+                    fr.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }
