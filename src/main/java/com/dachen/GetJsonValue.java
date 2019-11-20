@@ -362,8 +362,8 @@ public class GetJsonValue extends UDF {
     }
 
     public static void main(String[] args) {
-        String json = "{\"content\":\"用户进入首页(直播)\",\"livingId\":\"640923281708408832\",\"tel\":null,\"userId\":\"\",\"wxId\":\"oAbKSs5cWYADpB7fBlcQWRkDOt88\",\"wxName\":\"大老李\"}";
-        String json2 = "{name:\"yang\",age:10}";
+        String json = "{\"hasinviteuser\": False, \"doctorid\": \"37535\", \"leftasktimes\": 3, \"familyuserid\": \"\", \"paytime\": 1573208276104L, \"relatedtype\": 0, \"unionid\": \"5dbfcd2cdfc3c0329106e89f\", \"patientname\": \"周秀英\", \"recordstatus\": 3, \"orderid\": 642427553230884864L, \"patientid\": \"5dc2c8b8d85cb42337dec849\", \"expectendtime\": 1571565342152L, \"referrerid\": \"\", \"starttime\": 1573268309448L, \"patientheadpic\": \"http://thirdwx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTIeic1cB1rvmSZdicNfQ7URXqJiaW2635GPRmVxibxLGJiaFkfvsc3cqwzoa7FFhhvUVHicwOPP2UvE0BIA/132\", \"ordertype\": 2, \"userid\": \"586905\"}";
+        String json2 = "{'starttime': 1573268309448L}";
         String json3 = "{\n" +
                 "  \"courseId\" : \"619493640888127488\"\n" +
                 "}";
@@ -376,7 +376,7 @@ public class GetJsonValue extends UDF {
         String mapjson2 = "{type=0, file={sizeStr=238 KB, suffix=pdf, file_id=o_1btf2b8f6li72gq16olnjdkhn11, type={type={aaa=bbb}}, file_name=“儿童晕厥诊断指南(2016年修订版)”解读（王成，2016）.pdf, size=244191, file_url=http://community.file.dachentech.com.cn/o_1btf2b8f6li72gq16olnjdkhn11,xxx={yyy=zzz}}}";
 
 //        System.out.println(new GetJsonValue().evaluate(mapjson2, "file.type.type.aaa"));
-        System.out.println(new GetJsonValue().evaluate(json, "content"));
+        System.out.println(new GetJsonValue().evaluate(json2, "starttime"));
 
         String a = "{\"_id\" : \"586d1b49f509e29a=;,efad942e\", \"bizId\" : \"586d157df509e2ad713f71d5\", \"toUserId\" : \"10347\", \"amount\" : \"0.01\", \"message\" : \"阳光普照1\", \"red_id\" : \"95161003011997696\", \"materialId\" : \"39\", \"redSendSuccess\" : true, \"msgSendSuccess\" : true, \"result\" : \"{\\\"code\\\":\\\"0000\\\",\\\"result\\\":{\\\"result\\\":\\\"0.01\\\",\\\"Count\\\":1,\\\"GroupId\\\":\\\"\\\",\\\"ID\\\":\\\"95161003011997696\\\",\\\"Message\\\":\\\"阳光普照1\\\",\\\"Recipient\\\":\\\"10347\\\"},\\\"message\\\":\\\"操作成功\\\",\\\"request_id\\\":\\\"cc724bc0038d49a59a4b1959ec45972a\\\"}\", \"createDate\" : \"2017-01-04T23:56:56.000+0000\"}";
 //        System.out.println(new GetJsonValue().evaluate(a, "result.resulT.id"));
