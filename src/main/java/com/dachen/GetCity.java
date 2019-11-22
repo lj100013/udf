@@ -37,6 +37,11 @@ public class GetCity extends UDF {
                 result = getResultCity(similar);
                 String provin = ParseAddressUtil.isProvince(stringList.get(0));
 
+                //未匹配到city,尝试取前两位去匹配
+                if (result == null && similar.length() > 3) {
+                    result = getResultCity(similar.substring(0, 2));
+
+                }
                 // 存在对应的city,必须保证province相同
                 if (result != null && provin != null && ParseAddressUtil.cityToProvince.get(result).equals(provin)) {
 
@@ -48,7 +53,15 @@ public class GetCity extends UDF {
             //没有省份的情况
             similar = stringList.get(0);
             result = getResultCity(similar);
-            if (result != null) {
+            String provin = ParseAddressUtil.isProvince(similar);
+
+            //不能既是省又是市的情况
+            if (result != null && (provin == null || municipalities.indexOf(provin) != -1)) {
+                return result;
+            }
+
+            result = getResultCity(similar.substring(0, 2));
+            if (result != null && (provin == null || municipalities.indexOf(provin) != -1)) {
                 return result;
             }
             return "";
@@ -86,13 +99,15 @@ public class GetCity extends UDF {
         }
         return null;
     }
+
     @Test
     public void test() {
-        System.out.println(evaluate("临城县中医院消化内科_体验2"));
+        System.out.println(evaluate("潮汕心一区-血液科"));
     }
+
     public static void main(String[] args) {
         try {
-            List<String> stringList = ParseAddressUtil.getStringList("临城县中医院消化内科_体验2");
+            List<String> stringList = ParseAddressUtil.getStringList("潮汕心一区-神经内科-心血管内科-消化内科");
             String similar = null;
             String result = null;
             //先根据县级地址,取省市

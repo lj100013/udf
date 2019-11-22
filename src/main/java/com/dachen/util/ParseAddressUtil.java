@@ -1,5 +1,6 @@
 package com.dachen.util;
 
+import org.junit.Test;
 import org.wltea.analyzer.core.IKSegmenter;
 import org.wltea.analyzer.core.Lexeme;
 
@@ -32,6 +33,7 @@ public class ParseAddressUtil {
     }
 
     public static String isCity(String citySimilar) {
+
         if (citySimilar.length() < 2) {
             return null;
         }
@@ -65,6 +67,10 @@ public class ParseAddressUtil {
         return s;
     }
 
+    @Test
+    public void test() throws Exception {
+        System.out.println(getStringList("大连心二区"));
+    }
 
     public static String province = "江苏省," +
             "黑龙江省," +
