@@ -27,6 +27,9 @@ public class GetProvince extends UDF {
             }
 
             String provinceSimilar = stringList.get(0);
+            if (provinceSimilar.length() == 1 && stringList.size() > 1) {
+                provinceSimilar = provinceSimilar + stringList.get(1).substring(0, 1);
+            }
             String provinceResult = ParseAddressUtil.isProvince(provinceSimilar);
             if (provinceResult != null) {
                 return provinceResult;
@@ -61,7 +64,7 @@ public class GetProvince extends UDF {
 
     @Test
     public void test() {
-        System.out.println(evaluate("青岛大学附属医院(市南院区)-消化内科"));
+        System.out.println(evaluate("新乡心一区"));
     }
 
     public static void main(String[] args) {

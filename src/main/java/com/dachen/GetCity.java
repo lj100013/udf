@@ -52,6 +52,11 @@ public class GetCity extends UDF {
 
             //没有省份的情况
             similar = stringList.get(0);
+
+            //分词长度为1时,取后一个的第一个字符
+            if (similar.length() == 1 && stringList.size() > 1) {
+                similar = similar + stringList.get(1).substring(0, 1);
+            }
             result = getResultCity(similar);
             String provin = ParseAddressUtil.isProvince(similar);
 
@@ -102,7 +107,7 @@ public class GetCity extends UDF {
 
     @Test
     public void test() {
-        System.out.println(evaluate("潮汕心一区-血液科"));
+        System.out.println(evaluate("新乡心一区"));
     }
 
     public static void main(String[] args) {
