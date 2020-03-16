@@ -14,12 +14,10 @@ public class ParseUri extends UDF {
             if (StringUtils.isBlank(u)) {
                 continue;
             }
-            if (u.matches("\\d+")) {
+            if (u.matches("\\d+") || u.matches("^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{24,}$")) {
                 break;
             }
-            if (u.length() > 23 && u.matches("^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{23,}$")) {
-                System.out.println(u);
-            }
+
             sb.append("/").append(u);
         }
         return sb.toString();
@@ -27,7 +25,7 @@ public class ParseUri extends UDF {
 
 
     public static void main(String[] args) {
-        String uri = "/";
+        String uri = "/circle-school/course/detail/5b59401bc03cbe0f6439d705/5b7438df40ae505c0e0a7513";
         System.out.println(new ParseUri().evaluate(uri));
     }
 }
