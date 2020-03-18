@@ -1,11 +1,13 @@
 package com.dachen;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.hive.ql.exec.UDF;
 
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class timestamp_getday extends UDF {
 
@@ -46,9 +48,27 @@ public class timestamp_getday extends UDF {
         return output;
     }
 
+    public String evaluate(String time,Integer days) {
+        String result = "";
+        if(StringUtils.isBlank(time)) return result;
+        try{
+            String pat = "yyyy-MM-dd";
+            SimpleDateFormat format = new SimpleDateFormat(pat);
+            Date date =  format.parse(time);
+            Calendar calendar = new GregorianCalendar();
+            calendar.setTime(date);
+            calendar.add(Calendar.DATE,days);
+            result = format.format(calendar.getTime());
+        }catch(Exception e){
+
+        }
+        return result;
+    }
+
+
     public static void main(String[] args) {
-        String time = "-154654846";
+        String time = "2019-01-01";
         timestamp_getday pt = new timestamp_getday();
-        System.out.println(pt.evaluate(time));
+        System.out.println(pt.evaluate(time,31));
     }
 }
