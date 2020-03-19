@@ -66,12 +66,13 @@ public class timestamp_getweek extends UDF {
             String pat = "yyyy-MM-dd";
             String year = time.substring(0,time.indexOf("-"));
             String week = time.substring(time.indexOf("-")+1,time.length());
+            if(Integer.parseInt(week) > 52) return result;
             SimpleDateFormat format = new SimpleDateFormat(pat);
-            Date date =  format.parse(time+"-01-01");
+            Date date =  format.parse(year+"-01-01");
             Calendar calendar = new GregorianCalendar();
             calendar.setTime(date);
-            calendar.add(Calendar.WEEK_OF_YEAR,Integer.parseInt(week)+weeks);
-            result = calendar.getWeekYear()+"-"+calendar.getWeeksInWeekYear();
+            calendar.add(Calendar.WEEK_OF_YEAR,Integer.parseInt(week)-1+weeks);
+            result = calendar.get(Calendar.YEAR)+"-"+calendar.get(Calendar.WEEK_OF_YEAR);
         }catch(Exception e){
         }
         return result;
@@ -80,14 +81,9 @@ public class timestamp_getweek extends UDF {
 
 
     public static void main(String[] args) {
-//        for(int i =0;i<10;i++){
-//        String time = 2001 + i + "-12-31";
-//        timestamp_getweek pt = new timestamp_getweek();
-//        System.out.println(time + "  " + pt.evaluate(time));
-//        }
-        String time = "1999-05";
+        String time = "2020-51";
         timestamp_getweek pt = new timestamp_getweek();
-        System.out.println(pt.evaluate(time,105));
+        System.out.println(pt.evaluate(time,5));
     }
 
 }
