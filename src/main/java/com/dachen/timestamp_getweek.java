@@ -72,7 +72,7 @@ public class timestamp_getweek extends UDF {
             Calendar calendar = new GregorianCalendar();
             calendar.setTime(date);
             calendar.add(Calendar.WEEK_OF_YEAR,Integer.parseInt(week)-1+weeks);
-            result = calendar.get(Calendar.YEAR)+"-"+calendar.get(Calendar.WEEK_OF_YEAR);
+            result = calendar.get(Calendar.YEAR)+"-"+week.format("%02d", calendar.get(Calendar.WEEK_OF_YEAR));
         }catch(Exception e){
         }
         return result;
@@ -81,7 +81,7 @@ public class timestamp_getweek extends UDF {
 
 
     public static void main(String[] args) {
-        String time = "2020-51";
+        String time = "2020-52";
         timestamp_getweek pt = new timestamp_getweek();
         System.out.println(pt.evaluate(time,5));
     }
