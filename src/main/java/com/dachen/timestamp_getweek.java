@@ -59,6 +59,12 @@ public class timestamp_getweek extends UDF {
         return output;
     }
 
+    /**
+     * 一年多少周
+     * @param time
+     * @param weeks
+     * @return
+     */
     public String evaluate(String time,Integer weeks) {
         String result = "";
         if(StringUtils.isBlank(time)) return result;
@@ -66,13 +72,18 @@ public class timestamp_getweek extends UDF {
             String pat = "yyyy-MM-dd";
             String year = time.substring(0,time.indexOf("-"));
             String week = time.substring(time.indexOf("-")+1,time.length());
-            if(Integer.parseInt(week) > 52) return result;
+            if(Integer.parseInt(week) > 53) return result;
             SimpleDateFormat format = new SimpleDateFormat(pat);
             Date date =  format.parse(year+"-01-01");
             Calendar calendar = new GregorianCalendar();
             calendar.setTime(date);
+            calendar.setFirstDayOfWeek(Calendar.MONDAY);
             calendar.add(Calendar.WEEK_OF_YEAR,Integer.parseInt(week)-1+weeks);
-            result = calendar.get(Calendar.YEAR)+"-"+calendar.get(Calendar.WEEK_OF_YEAR);
+            if (calendar.get(Calendar.MONDAY) == 11 && calendar.get(Calendar.WEEK_OF_YEAR) == 1) {
+                result = calendar.get(Calendar.YEAR)+1+"-"+String.format("%02d",calendar.get(Calendar.WEEK_OF_YEAR));
+            } else {
+                result = calendar.get(Calendar.YEAR)+"-"+String.format("%02d",calendar.get(Calendar.WEEK_OF_YEAR));
+            }
         }catch(Exception e){
         }
         return result;
