@@ -26,8 +26,7 @@ public class timestamp_getmonth extends UDF {
         } else if (time == null || time.length()<10) {
             return output;
         }
-        Timestamp date = new Timestamp(Long.parseLong(time.substring(0, 10)) * 1000);
-        output = month.format(date);
+        output = month.format(time.length() == 10 ? new Date(Long.parseLong(time)*1000): new Date(Long.parseLong(time))) ;
         return output;
     }
 
@@ -36,8 +35,7 @@ public class timestamp_getmonth extends UDF {
         if (time == null || time.toString().length()<10) return output;
         SimpleDateFormat month = new SimpleDateFormat("yyyy-MM");
         String timestamp = time.toString();
-        Timestamp date = new Timestamp(Long.parseLong(timestamp.substring(0, 10)) * 1000);
-        output = month.format(date);
+        output = month.format(timestamp.length() == 10 ? new Date(Long.parseLong(timestamp)*1000): new Date(Long.parseLong(timestamp))) ;
         return output;
     }
 
@@ -61,8 +59,18 @@ public class timestamp_getmonth extends UDF {
 
 
     public static void main(String[] args) {
-        String time = "2019-05";
-        timestamp_getmonth pt = new timestamp_getmonth();
-        System.out.println(pt.evaluate(time,-15));
+        try {
+            timestamp_getmonth pt = new timestamp_getmonth();
+            for(int i = 2300;i<=3000;i++){
+                Thread.sleep(300);
+                String pat = "yyyy-MM-dd";
+                SimpleDateFormat format = new SimpleDateFormat(pat);
+                Date date =  format.parse(i+"-01-01");
+                System.out.println(i+"-01-01"+"====="+pt.evaluate(date.getTime())+"=="+pt.evaluate(date.getTime()+""));
+            }
+        }catch (Exception e){
+
+        }
+
     }
 }

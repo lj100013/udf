@@ -26,9 +26,7 @@ public class timestamp_getday extends UDF {
             output = time.substring(0, 4) + "-" + time.substring(4, 6) + "-" + time.substring(6, 8);
             return output;
         }
-        Timestamp date = new Timestamp(Long.parseLong(time.substring(0,10))*1000);
-        output = day.format(date);
-
+        output = day.format(time.length() == 10 ? new Date(Long.parseLong(time)*1000): new Date(Long.parseLong(time)));
         return output;
     }
 
@@ -42,9 +40,7 @@ public class timestamp_getday extends UDF {
         }
         SimpleDateFormat day = new SimpleDateFormat("yyyy-MM-dd");
         String timestamp = time.toString();
-        Timestamp date = new Timestamp(Long.parseLong(timestamp.substring(0,10))*1000);
-        output = day.format(date);
-
+        output = day.format(timestamp.length() == 10 ? new Date(Long.parseLong(timestamp)*1000): new Date(Long.parseLong(timestamp)));
         return output;
     }
 
@@ -67,8 +63,17 @@ public class timestamp_getday extends UDF {
 
 
     public static void main(String[] args) {
-        String time = "2019-01-01";
-        timestamp_getday pt = new timestamp_getday();
-        System.out.println(pt.evaluate(time,31));
+        try {
+            timestamp_getday pt = new timestamp_getday();
+            for(int i = 1970;i<=3000;i++){
+                Thread.sleep(300);
+                String pat = "yyyy-MM-dd HH:mm:ss";
+                SimpleDateFormat format = new SimpleDateFormat(pat);
+                Date date =  format.parse(i+"-12-01 01:01:01");
+                System.out.println(i+"-01-01"+"====="+pt.evaluate(date.getTime())+"=="+pt.evaluate(date.getTime()+""));
+            }
+        }catch (Exception e){
+
+        }
     }
 }

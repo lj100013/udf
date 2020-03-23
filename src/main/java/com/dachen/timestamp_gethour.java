@@ -5,6 +5,7 @@ import org.apache.hadoop.hive.ql.exec.UDF;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class timestamp_gethour extends UDF {
 
@@ -21,8 +22,7 @@ public class timestamp_gethour extends UDF {
                 return output;
             }
         }
-        Timestamp date = new Timestamp(Long.parseLong(time.substring(0,10))*1000);
-        output = hour.format(date);
+        output = hour.format(time.length() == 10 ? new Date(Long.parseLong(time)*1000): new Date(Long.parseLong(time)));
         return output;
     }
 
@@ -31,15 +31,23 @@ public class timestamp_gethour extends UDF {
         if (time == null || time.toString().length()<10) return output;
         String timestamp = time.toString();
         SimpleDateFormat hour = new SimpleDateFormat("HH");
-        Timestamp date = new Timestamp(Long.parseLong(timestamp.substring(0,10))*1000);
-        output = hour.format(date);
+        output = hour.format(timestamp.length() == 10 ? new Date(Long.parseLong(timestamp)*1000): new Date(Long.parseLong(timestamp)));
         return output;
     }
 
 
     public static void main(String[] args) {
-        String time = "2018-11-11 01:01:01";
-        timestamp_gethour pt = new timestamp_gethour();
-        System.out.println(pt.evaluate(time));
+        try {
+            timestamp_gethour pt = new timestamp_gethour();
+            for(int i = 1970;i<=3000;i++){
+                Thread.sleep(300);
+                String pat = "yyyy-MM-dd HH:mm:ss";
+                SimpleDateFormat format = new SimpleDateFormat(pat);
+                Date date =  format.parse(i+"-01-01 01:01:01");
+                System.out.println(i+"-01-01"+"====="+pt.evaluate(date.getTime())+"=="+pt.evaluate(date.getTime()+""));
+            }
+        }catch (Exception e){
+
+        }
     }
 }

@@ -27,12 +27,17 @@ public class timestamp_getweek extends UDF {
         } else if (time == null || time.length()<10) {
             return output;
         }
-        Timestamp date = new Timestamp(Long.parseLong(time.substring(0,10))*1000);
+        Date date = null;
+        if(time.length() == 10){
+            date = new Date(Long.parseLong(time)*1000);
+        }else{
+            date = new Date(Long.parseLong(time));
+        }
         Calendar calendar = Calendar.getInstance();
         calendar.setFirstDayOfWeek(Calendar.MONDAY);
         calendar.setTime(date);
         String week = "";
-        if (calendar.get(Calendar.MONDAY) == 11 && calendar.get(Calendar.WEEK_OF_YEAR) == 1) {
+        if (calendar.get(Calendar.MONTH) == 11 && calendar.get(Calendar.WEEK_OF_YEAR) == 1) {
             output =  Integer.parseInt(year.format(date)) +1 + "-" + week.format("%02d",calendar.get(Calendar.WEEK_OF_YEAR));
         } else {
             output = year.format(date) + "-" + week.format("%02d", calendar.get(Calendar.WEEK_OF_YEAR));
@@ -46,12 +51,17 @@ public class timestamp_getweek extends UDF {
         SimpleDateFormat year = new SimpleDateFormat("yyyy");
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String timestamp = time.toString();
-        Timestamp date = new Timestamp(Long.parseLong(timestamp.substring(0,10))*1000);
+        Date date = null;
+        if(timestamp.length() == 10){
+            date = new Date(time*1000);
+        }else{
+            date = new Date(time);
+        }
         Calendar calendar = Calendar.getInstance();
         calendar.setFirstDayOfWeek(Calendar.MONDAY);
         calendar.setTime(date);
         String week = "";
-        if (calendar.get(Calendar.MONDAY) == 11 && calendar.get(Calendar.WEEK_OF_YEAR) == 1) {
+        if (calendar.get(Calendar.MONTH) == 11 && calendar.get(Calendar.WEEK_OF_YEAR) == 1) {
             output =  Integer.parseInt(year.format(date)) +1 + "-" + week.format("%02d",calendar.get(Calendar.WEEK_OF_YEAR));
         } else {
             output = year.format(date) + "-" + week.format("%02d", calendar.get(Calendar.WEEK_OF_YEAR));
@@ -79,7 +89,7 @@ public class timestamp_getweek extends UDF {
             calendar.setTime(date);
             calendar.setFirstDayOfWeek(Calendar.MONDAY);
             calendar.add(Calendar.WEEK_OF_YEAR,Integer.parseInt(week)-1+weeks);
-            if (calendar.get(Calendar.MONDAY) == 11 && calendar.get(Calendar.WEEK_OF_YEAR) == 1) {
+            if (calendar.get(Calendar.MONTH) == 11 && calendar.get(Calendar.WEEK_OF_YEAR) == 1) {
                 result = calendar.get(Calendar.YEAR)+1+"-"+String.format("%02d",calendar.get(Calendar.WEEK_OF_YEAR));
             } else {
                 result = calendar.get(Calendar.YEAR)+"-"+String.format("%02d",calendar.get(Calendar.WEEK_OF_YEAR));
@@ -92,9 +102,23 @@ public class timestamp_getweek extends UDF {
 
 
     public static void main(String[] args) {
-        String time = "2020-51";
-        timestamp_getweek pt = new timestamp_getweek();
-        System.out.println(pt.evaluate(time,5));
+        try {
+            timestamp_getweek pt = new timestamp_getweek();
+//            String time = "2020-51";
+//            timestamp_getweek pt = new timestamp_getweek();
+//            System.out.println(pt.evaluate(time,5));
+            for(int i = 2300;i<=3000;i++){
+                Thread.sleep(300);
+                String pat = "yyyy-MM-dd";
+                SimpleDateFormat format = new SimpleDateFormat(pat);
+                Date date =  format.parse(i+"-01-01");
+                System.out.println(i+"-01-01"+"====="+pt.evaluate(date.getTime())+"=="+pt.evaluate(date.getTime()+"") + "***" + pt.evaluate(i+"-01",5));
+            }
+
+        }catch(Exception e){
+
+        }
+
     }
 
 }
