@@ -53,19 +53,23 @@ public class GetJsonValue extends UDF {
                     }
                     return getMatchPair(jsonStr, '{', '}', arrayIndex);
                 }
-                return null;
+                return "";
             }
             try {
                 return JSONArray.parseArray(jsonStr).get(arrayIndex).toString();
 
             } catch (IndexOutOfBoundsException e) {
-                return null;
+                return "";
             } catch (Exception e) {
+                if (jsonStr.trim().indexOf('[', 1) < 0) {
+
+                    return jsonStr.replace("[", "").replace("]", "").split(",")[arrayIndex].trim();
+                }
                 return getLayerMatchPair(jsonStr, '[', ']', 1).get(arrayIndex);
             }
 
         } catch (Exception ee) {
-            return null;
+            return "";
         }
     }
 
@@ -340,9 +344,9 @@ public class GetJsonValue extends UDF {
     //获取指定匹配的内容
     //layerIndex 获取嵌套的第几层,从0开始,
     public List<String> getLayerMatchPair(String src, char start, char end, int layerIndex) {
+
         int i = 0;
         List<String> lists = new ArrayList<String>();
-
         while (getMatchPair(src, start, end, i) != null) {
             lists.add(getMatchPair(src, start, end, i));
             i = i + 1;
@@ -368,15 +372,15 @@ public class GetJsonValue extends UDF {
                 "  \"courseId\" : \"619493640888127488\"\n" +
                 "}";
         String arrayjson = "[{\"nAme\":\"yang\",\"age\":9,\"addr\":{\"country\":\"中国\",\"city\":\"深圳\",\"compaNy\":[\"大辰\",\"玄关\"]}},{\"nAme\":\"LI\",\"age\":9,\"addr\":{\"country\":\"CHINAME\",\"city\":\"深圳\",\"compaNy\":[\"大辰2\",\"玄关2\"]}}]";
-        String arrayjson2 = "[\"a\",\"b\",3]";
+        String arrayjson2 = "[393124139952619520, 393130680873168896, 393133500489908224, 393135976521707520]";
         String arrayjson3 = "[[aaa,111],[bbb,222]]";
         String arrayjson4 = "[]";
         String arrayjson5 = "";
         String mapjson = "[{type=0, file={sizeStr=238 KB, suffix=pdf, file_id=o_1btf2b8f6li72gq16olnjdkhn11, type=application/pdf, file_name=“儿童晕厥诊断指南(2016年修订版)”解读（王成，2016）.pdf, size=244191, file_url=http://community.file.dachentech.com.cn/o_1btf2b8f6li72gq16olnjdkhn11,xxx={yyy=zzz}}}]";
         String mapjson2 = "{type=0, file={sizeStr=238 KB, suffix=pdf, file_id=o_1btf2b8f6li72gq16olnjdkhn11, type={type={aaa=bbb}}, file_name=“儿童晕厥诊断指南(2016年修订版)”解读（王成，2016）.pdf, size=244191, file_url=http://community.file.dachentech.com.cn/o_1btf2b8f6li72gq16olnjdkhn11,xxx={yyy=zzz}}}";
-
+        System.out.println(arrayjson3.trim().indexOf("[", 2));
 //        System.out.println(new GetJsonValue().evaluate(mapjson2, "file.type.type.aaa"));
-        System.out.println(new GetJsonValue().evaluate(json2, "starttime"));
+        System.out.println(new GetJsonValue().evaluate(arrayjson2, 2));
 
         String a = "{\"_id\" : \"586d1b49f509e29a=;,efad942e\", \"bizId\" : \"586d157df509e2ad713f71d5\", \"toUserId\" : \"10347\", \"amount\" : \"0.01\", \"message\" : \"阳光普照1\", \"red_id\" : \"95161003011997696\", \"materialId\" : \"39\", \"redSendSuccess\" : true, \"msgSendSuccess\" : true, \"result\" : \"{\\\"code\\\":\\\"0000\\\",\\\"result\\\":{\\\"result\\\":\\\"0.01\\\",\\\"Count\\\":1,\\\"GroupId\\\":\\\"\\\",\\\"ID\\\":\\\"95161003011997696\\\",\\\"Message\\\":\\\"阳光普照1\\\",\\\"Recipient\\\":\\\"10347\\\"},\\\"message\\\":\\\"操作成功\\\",\\\"request_id\\\":\\\"cc724bc0038d49a59a4b1959ec45972a\\\"}\", \"createDate\" : \"2017-01-04T23:56:56.000+0000\"}";
 //        System.out.println(new GetJsonValue().evaluate(a, "result.resulT.id"));
