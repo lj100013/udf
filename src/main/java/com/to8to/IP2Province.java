@@ -1,4 +1,4 @@
-package com.dachen;
+package com.to8to;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.dachen.IP2City.binarySearch;
+import static com.to8to.IP2City.binarySearch;
 
 public class IP2Province extends UDF {
 

@@ -1,9 +1,8 @@
-package com.dachen;
+package com.to8to;
 
 import org.apache.hadoop.hive.ql.exec.UDF;
 
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class timestamp_getyear extends UDF {

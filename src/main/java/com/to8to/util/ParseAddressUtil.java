@@ -1,4 +1,4 @@
-package com.dachen.util;
+package com.to8to.util;
 
 import org.junit.Test;
 import org.wltea.analyzer.core.IKSegmenter;

@@ -1,6 +1,6 @@
-package com.dachen;
+package com.to8to;
 
-import com.dachen.util.ParseAddressUtil;
+import com.to8to.util.ParseAddressUtil;
 import org.apache.hadoop.hive.ql.exec.UDF;
 import org.junit.Test;
 

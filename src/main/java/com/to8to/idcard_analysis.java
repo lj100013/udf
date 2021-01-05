@@ -1,4 +1,4 @@
-package com.dachen;
+package com.to8to;
 
 import org.apache.hadoop.hive.ql.exec.UDF;
 

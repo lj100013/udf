@@ -1,4 +1,4 @@
-package com.dachen;
+package com.to8to;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.hive.ql.exec.UDF;
