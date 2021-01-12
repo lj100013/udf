@@ -7,7 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-public class week_begin extends UDF {
+public class week_begin2 extends UDF {
 
     public String evaluate(String time) {
         String output="";
@@ -34,7 +34,10 @@ public class week_begin extends UDF {
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(date);
         int i = calendar.get(Calendar.DAY_OF_WEEK);  // 一周的第几天
-        calendar.add(Calendar.DATE,-(i-1));
+        int week = calendar.get(Calendar.WEEK_OF_YEAR); // 这一年的第一周
+        // System.out.println("week:"+week);
+        int num = 1 - week%2;
+        calendar.add(Calendar.DATE,-(i-1) - 7*num);
         output = day.format(calendar.getTime());
         return output;
     }
@@ -57,16 +60,18 @@ public class week_begin extends UDF {
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(date);
         int i = calendar.get(Calendar.DAY_OF_WEEK);  // 一周的第几天
-        calendar.add(Calendar.DATE,-(i-1));
+        int week = calendar.get(Calendar.WEEK_OF_YEAR); // 这一年的第一周
+        int num = 1 - week%2;
+        calendar.add(Calendar.DATE,-(i-1) - 7*num);
         output = day.format(calendar.getTime());
         return output;
     }
 
     public static void main(String[] args) {
-        week_begin mb = new week_begin();
+        week_begin2 mb = new week_begin2();
 //        String s1 = mb.evaluate(20200917L);
 //        String s2 = mb.evaluate("2020-09-17");
-//        String s3 = mb.evaluate("20201131");
+//        String s3 = mb.evaluate("20210102");
 //        System.out.println(s1+" "+s2+" "+s3);
 //        System.out.println(s3);
         System.out.println(mb.evaluate(args[0].toString()));

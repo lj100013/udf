@@ -13,14 +13,14 @@ public class month_begin extends UDF {
 
         String output = "";
         Date date = null;
-        SimpleDateFormat day_ = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat day_fmt = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat day = new SimpleDateFormat("yyyyMMdd");
         // 如果输入的time参数为空或者长度<8,则人为参数输入不和规范，返回空串
         if (time == null || time.length() < 8) {
             return output;
         } else if (time.contains("-")) { // 如果是YYYY-mm-dd类型的输入，转为YYYYmmdd
             try {
-                String time_stamp_str = String.valueOf(day_.parse(time).getTime());
+                String time_stamp_str = String.valueOf(day_fmt.parse(time).getTime());
                 String d = day.format(new Date(Long.parseLong(time_stamp_str))); // 时间戳转换日期
                 date = day.parse(d);
             } catch (Exception e) {
@@ -44,15 +44,16 @@ public class month_begin extends UDF {
         String output = "";
         Date date = null;
         SimpleDateFormat day = new SimpleDateFormat("yyyyMMdd");
-        if (time.toString().length() == 8 && time >= 19700101 && time <= 21000101) {
+        if (time == null) {
+            return output;
+        }else if (time.toString().length() == 8 && time >= 19700101 && time <= 21000101) {
             try {
                 date = new Date(day.parse(time.toString()).getTime());
 
             } catch (Exception e) {
                 return output;
             }
-
-        } else if (time == null || time.toString().length() < 10) {
+        }else if (time.toString().length() < 10){
             return output;
         }
         Calendar calendar = new GregorianCalendar();
@@ -70,8 +71,8 @@ public class month_begin extends UDF {
 //        String s2 = mb.evaluate("2020-09-17");
 //        String s3 = mb.evaluate("20200917");
 //        System.out.println(s1+" "+s2+" "+s3);
+        System.out.println(mb.evaluate(args[0].toString()));
 
-        System.out.println(mb.evaluate(args[0]));
 
     }
 }
