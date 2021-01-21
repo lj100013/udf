@@ -1,7 +1,6 @@
 package com.to8to;
 
 import org.apache.hadoop.hive.ql.exec.UDF;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
